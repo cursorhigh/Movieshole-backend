@@ -1,0 +1,5 @@
+db.sqlite3
+users/__pycache__/
+users/migrations/
+.vscode
+movieshole/__pycache__/
