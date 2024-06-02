@@ -20,3 +20,4 @@ def google_auth(request):
             return JsonResponse({'status': 'success', 'user_id': user.id})
         return JsonResponse({'status': 'error', 'message': 'Invalid data'}, status=400)
     return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
