@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from .models import User
 from django.contrib.auth.models import User as Users
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate 
 
 @csrf_exempt
 def google_auth(request):
@@ -42,5 +42,40 @@ def loginnow(request):
                 {"message": "Invalid username or password."},
                 status=401,
             )
-        return JsonResponse({'status': 'success',},status=200)
+        return JsonResponse({'status': 'success','id':user.id,'username':username,'email':email},status=200)
     return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+
+@csrf_exempt
+def signnow(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data.get("email")
+        username=username.split('@')[0]
+        email = data.get("email")
+        password = data.get("password")
+        try:
+            verify = password.split('@')[1]
+        except:
+            verify=''
+        password = password.split('@')[0]
+        if not username or not password:
+            return JsonResponse(
+                {"message": "Please provide both username and password."},
+                status=400,
+            )
+        elif verify!= 'swadhin':
+            return JsonResponse(
+                {"message": "You dont have access to create an account."},
+                status=401,
+            )
+        if Users.objects.filter(email=email).exists():
+                return JsonResponse(
+                {"message": "Account already existes,Try to login instead."},
+                status=400,
+            )
+        else:
+            user = Users.objects.create_user(username,email,password)
+            user.save()
+            if user is not None:
+                return JsonResponse({'status': 'Account created succesfully!','id':user.id,'username':username,'email':email},status=200)
